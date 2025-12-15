@@ -19,13 +19,19 @@ const navItems = [
     id: "dashboard",
   },
   {
+    href: "/victims",
+    label: "Data Korban",
+    icon: FolderOpen,
+    id: "korban",
+  },
+  {
     href: "/cases",
     label: "Data Kasus",
     icon: FolderOpen,
     id: "kasus",
   },
   {
-    href: "/victims",
+    href: "/actions",
     label: "Tindakan Forensik",
     icon: ClipboardCheck,
     id: "forensik",

@@ -19,12 +19,6 @@ const navItems = [
     id: "dashboard",
   },
   {
-    href: "/korban",
-    label: "Data Korban",
-    icon: Users,
-    id: "korban",
-  },
-  {
     href: "/cases",
     label: "Data Kasus",
     icon: FolderOpen,

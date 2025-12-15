@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { usePathname } from "next/navigation";
 import Link from "next/link";

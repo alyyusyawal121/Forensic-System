@@ -50,7 +50,7 @@ const navItems = [
     },
 
     {
-        href: "/tindakan",
+        href: "/actions",
         label: "Actions",
         icon: HiOutlineSquares2X2 , 
         active: active === "home",

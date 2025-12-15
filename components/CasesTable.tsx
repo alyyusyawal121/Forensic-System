@@ -3,11 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import { db } from "@/lib/firebase/config";
+import { deleteDoc, doc } from "firebase/firestore";
+
+const handleDelete = async (id: string) => {
+  if (!confirm("Hapus kasus ini?")) return;
+
+  await deleteDoc(doc(db, "cases", id));
+
+  alert("Kasus berhasil dihapus!");
+  window.location.reload();
+};
 
 export default function CasesTable({ cases = [] }) {
   return (
     <div className="w-full bg-white rounded-xl shadow p-6">
-      
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Data Kasus</h1>
@@ -42,33 +52,28 @@ export default function CasesTable({ cases = [] }) {
               </tr>
             ) : (
               cases.map((c) => (
-                <tr
-                  key={c.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
+                <tr key={c.id} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-3 font-medium">{c.victimName}</td>
                   <td className="py-3 px-3">{c.caseType}</td>
                   <td className="py-3 px-3 text-gray-600">{c.summary}</td>
                   <td className="py-3 px-3 text-gray-700">{c.status}</td>
 
                   <td className="py-3 px-3 text-right flex items-center justify-end gap-3">
-                    
                     {/* EDIT */}
                     <Link
                       href={`/cases/edit/${c.id}`}
-                      className="text-blue-600 hover:text-blue-800 transition"
+                      className="text-blue-600 hover:text-blue-800"
                     >
                       <FiEdit2 size={18} />
                     </Link>
 
                     {/* DELETE */}
                     <button
-                      onClick={() => console.log("delete", c.id)}
-                      className="text-red-600 hover:text-red-800 transition"
+                      onClick={() => handleDelete(c.id)}  // ✔ FIXED
+                      className="text-red-600 hover:text-red-800"
                     >
                       <FiTrash2 size={18} />
                     </button>
-
                   </td>
                 </tr>
               ))

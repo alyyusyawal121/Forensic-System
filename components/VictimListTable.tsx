@@ -3,23 +3,39 @@
 import React from "react";
 import Link from "next/link";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
 
-export default function VictimListTable({ victims = [] }) {
+
+async function handleDelete(id) {
+  if (!confirm("Yakin ingin menghapus korban ini?")) return;
+
+  try {
+    await deleteDoc(doc(db, "victims", id));
+    alert("Korban berhasil dihapus!");
+    window.location.reload(); // cepat & mudah
+  } catch (err) {
+    console.error(err);
+    alert("Gagal menghapus korban.");
+  }
+}
+
+
+export default function VictimListTable({ victims, loading }) {
   return (
     <div className="w-full bg-white rounded-xl shadow p-6">
-      {/* HEADER */}
+      {/* HEADER SELALU TAMPIL */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Data Korban</h1>
 
         <Link
           href="/victims/add"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
         >
           <FiPlus /> Tambah Korban
         </Link>
       </div>
 
-      {/* TABLE */}
       <div className="overflow-x-auto">
         <table className="w-full table-auto border-collapse">
           <thead>
@@ -32,41 +48,59 @@ export default function VictimListTable({ victims = [] }) {
           </thead>
 
           <tbody>
-            {victims.length === 0 ? (
+            {/* ROW LOADING KHUSUS DATA */}
+            {loading &&
+              [...Array(3)].map((_, i) => (
+                <tr key={i} className="animate-pulse">
+                  <td className="py-3 px-3">
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  </td>
+                  <td className="py-3 px-3">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  </td>
+                  <td className="py-3 px-3">
+                    <div className="h-4 bg-gray-200 rounded w-48"></div>
+                  </td>
+                  <td className="py-3 px-3 text-right">
+                    <div className="h-4 bg-gray-200 rounded w-10 ml-auto"></div>
+                  </td>
+                </tr>
+              ))}
+
+            {/* DATA ASLI */}
+            {!loading && victims.length > 0 &&
+              victims.map((v) => (
+                <tr key={v.id} className="border-b hover:bg-gray-50">
+                  <td className="py-3 px-3 font-medium">{v.name}</td>
+                  <td className="py-3 px-3">{v.contact}</td>
+                  <td className="py-3 px-3">{v.description}</td>
+
+                  <td className="py-3 px-3 text-right flex justify-end gap-3">
+                    <Link
+                      href={`/victims/edit/${v.id}`}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <FiEdit2 size={18} />
+                    </Link>
+
+                    <button
+                      onClick={() => handleDelete(v.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <FiTrash2 size={18} />
+                    </button>
+
+                  </td>
+                </tr>
+              ))}
+
+            {/* KOSONG */}
+            {!loading && victims.length === 0 && (
               <tr>
                 <td colSpan={4} className="py-6 text-center text-gray-400">
                   Belum ada data korban.
                 </td>
               </tr>
-            ) : (
-              victims.map((victim) => (
-                <tr
-                  key={victim.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="py-3 px-3 font-medium">{victim.name}</td>
-                  <td className="py-3 px-3">{victim.contact}</td>
-                  <td className="py-3 px-3 text-gray-600">{victim.description}</td>
-
-                  <td className="py-3 px-3 text-right flex items-center justify-end gap-3">
-                    {/* EDIT BUTTON */}
-                    <Link
-                      href={`/victims/edit/${victim.id}`}
-                      className="text-blue-600 hover:text-blue-800 transition"
-                    >
-                      <FiEdit2 size={18} />
-                    </Link>
-
-                    {/* DELETE BUTTON */}
-                    <button
-                      onClick={() => console.log("delete", victim.id)}
-                      className="text-red-600 hover:text-red-800 transition"
-                    >
-                      <FiTrash2 size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))
             )}
           </tbody>
         </table>
@@ -74,3 +108,4 @@ export default function VictimListTable({ victims = [] }) {
     </div>
   );
 }
+
